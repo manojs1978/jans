@@ -253,6 +253,7 @@ class Plugin(DialogUtils):
             if selection == 'properties':
                 self.oauth_update_properties(tofocus=False)
             set_area = self.oauth_containers[selection]
+            self.app.current_page = selection
 
         if set_area:
             if hasattr(set_area, 'on_page_enter'):
@@ -539,7 +540,6 @@ class Plugin(DialogUtils):
             self.view_property(passed=passed, op_type='add')
 
         properties = VSplit([
-                Label(text=" ",width=1),
                 JansVerticalNav(
                         myparent=self.app,
                         headers=['Property Name'],

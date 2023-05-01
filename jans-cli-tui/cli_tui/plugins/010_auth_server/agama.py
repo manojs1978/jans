@@ -238,11 +238,8 @@ class Agama(DialogUtils):
                         error
                     ))
 
-        if not data_display:
-            if search_str:
-                self.app.show_message(_("Oops"), _(common_strings.no_matching_result), tobefocused = self.main_container)
-            else:
-                self.app.show_message(_(common_strings.info), _("No projects have been deployed for the time being."), tobefocused = self.main_container)
+        if not data_display and self.app.current_page == 'agama' and search_str:
+            self.app.show_message(_("Oops"), _(common_strings.no_matching_result), tobefocused = self.main_container)
             return
 
         self.working_container.hide_headers = False
@@ -260,14 +257,17 @@ class Agama(DialogUtils):
         self.app.start_progressing(_("Retreiving agama projects..."))
         response = await get_event_loop().run_in_executor(self.app.executor, self.app.cli_requests, cli_args)
         self.app.stop_progressing()
+
         try:
             self.data = response.json()
         except Exception:
-            self.app.show_message(_(common_strings.error), HTML(_("Server reterned non json data <i>{}</i>").format(response.text)), tobefocused=self.app.center_container)
+            if self.app.current_page == 'agama':
+                self.app.show_message(_(common_strings.error), HTML(_("Server reterned non json data <i>{}</i>").format(response.text)), tobefocused=self.app.center_container)
             return
 
         if not 'entriesCount' in self.data:
-            self.app.show_message(_(common_strings.error), HTML(_("Server reterned unexpected data <i>{}</i>").format(self.data)), tobefocused=self.app.center_container)
+            if self.app.current_page == 'agama':
+                self.app.show_message(_(common_strings.error), HTML(_("Server reterned unexpected data <i>{}</i>").format(self.data)), tobefocused=self.app.center_container)
             return
 
         self.working_container.all_data = self.data.get('entries', [])

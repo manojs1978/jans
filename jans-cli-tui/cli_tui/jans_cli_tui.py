@@ -121,6 +121,7 @@ class JansCliApp(Application):
         self.mouse_float=True
         self.browse_path = '/'
         self.app_configuration = {}
+        self.current_page = None
 
         self.not_implemented = Frame(
                             body=HSplit([Label(text=_("Not imlemented yet")), Button(text=_("MyButton"))], width=D()),
@@ -319,7 +320,7 @@ class JansCliApp(Application):
 
         if status not in (True, 'ID Token is expired'):
             buttons = [Button(_("OK"), handler=self.jans_creds_dialog)]
-            self.show_message(_("Error connectiong to Auth Server"), status, buttons=buttons)
+            self.show_message(_("Error connecting to Auth Server"), status, buttons=buttons)
 
         else:
             if not test_client and not self.cli_object.access_token:
@@ -426,7 +427,7 @@ class JansCliApp(Application):
             ],style='class:jans-main-usercredintial')
 
         buttons = [Button(_("Save"), handler=self.save_creds)]
-        dialog = JansGDialog(self, title=_("Janssen Config Api Client Credidentials"), body=body, buttons=buttons)
+        dialog = JansGDialog(self, title=_("Janssen Config Api Client Credentials"), body=body, buttons=buttons)
         async def coroutine():
             app = get_app()
             focused_before = app.layout.current_window
@@ -448,6 +449,7 @@ class JansCliApp(Application):
         self.bindings.add('c-c')(do_exit)
         self.bindings.add('c-q')(do_exit)
         self.bindings.add('f1')(self.help)
+        self.bindings.add('f4')(self.escape)
         self.bindings.add('escape')(self.escape)
         self.bindings.add('s-up')(self.up)
         self.bindings.add(Keys.Vt100MouseEvent)(self.mouse)
@@ -785,13 +787,18 @@ class JansCliApp(Application):
         widget:AnyContainer, 
         jans_help: AnyFormattedText= "",
         style: AnyFormattedText= "",
+        other_widgets: Optional[Sequence[AnyContainer]]=None
         )-> AnyContainer:
         title += ': '
         widget.window.jans_name = name
         widget.window.jans_help = jans_help
         #li, w2, width = self.handle_long_string(title, widget.values, widget)
 
-        v = VSplit([Label(text=title, width=len(title), style=style), widget])
+        my_widgets = [Window(FormattedTextControl(title), width=len(title)+1, style=style,), widget]
+        if other_widgets:
+            my_widgets.append(other_widgets)
+
+        v = VSplit(my_widgets)
         v.me = widget
 
         return v
@@ -809,6 +816,21 @@ class JansCliApp(Application):
         b.window.jans_help = jans_help
         if handler:
             b.handler = handler
+        return b
+
+    def getButtonWithHandler(
+                self, 
+                text: AnyFormattedText,
+                name: AnyFormattedText,
+                jans_help: AnyFormattedText,
+                handler: Callable= None, 
+                ) -> Button:
+
+        b = Button(text=text, width=len(text)+2)
+        b.window.jans_name = name
+        b.window.jans_help = jans_help
+        if handler:
+            b.handler = lambda:handler(name)
         return b
 
     def update_status_bar(self) -> None:
