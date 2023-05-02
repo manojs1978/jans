@@ -22,7 +22,7 @@ if [ $? -eq 0 ];
 then 
 echo "jans server is already installed"
 
-if [[ $OS == "ubuntu20" ]] || [[ $OS == "ubuntu20" ]]
+if [[ $OS == "ubuntu20" ]] || [[ $OS == "ubuntu22" ]]
 then
 	sudo apt remove -y jans
 	sudo python3 install.py -uninstall -y
@@ -173,7 +173,7 @@ EOF
 	# 	else
 	# 			echo " OS not found"
 	# fi
-sleep 300
+	sleep 300
 	echo " installation started"
 	if [[ ${PACKAGE_OR_ONLINE} == "online" ]]; then
 		sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
