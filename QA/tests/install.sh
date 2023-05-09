@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -x
 
 # LOG_LOCATION=./logs
 # exec > >(tee -i $LOG_LOCATION/install.log)
@@ -16,9 +16,9 @@ uninstall_jans() {
 	echo "checking  jans server installed"
 
 	sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
-sudo ls /opt/jans/jans-cli/config-cli.py
+sleep 10
+    if [[ `sudo ls /opt/jans/jans-cli/config-cli.py` ]];
 
-if [ $? -eq 0 ];
 then 
 echo "jans server is already installed"
 
@@ -33,6 +33,7 @@ then
 	sudo apt remove opendj-server
 	sudo /opt/opendj/uninstall
 	sudo rm -rf  /opt/opendj/lib
+	sudo rm -rf ~/jans-*
 	
 elif [[ $OS == "suse" ]]
 then
@@ -45,6 +46,8 @@ then
 	sudo zypper remove opendj-server
 	sudo /opt/opendj/uninstall
 	sudo rm -rf  /opt/opendj/lib
+	sudo rm -rf ~/jans-*.*
+
 elif [[ $OS == "rhel" ]]
 then
 	sudo yum remove -y jans
@@ -56,6 +59,7 @@ then
 	sudo yum remove opendj-server
 	sudo /opt/opendj/uninstall
 	sudo rm -rf  /opt/opendj/lib
+	sudo rm -rf ~/jans-*.*
 fi
 else
 echo "jans server is not installed"
@@ -67,13 +71,7 @@ EOF
 
 install_jans() {
 
-	rm setup.properties
-	# IP_ADDRESS=$HOST
-	# HOSTNAME=`sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} hostname`
-
-	# echo "$USERNAME"
-	# echo "$HOST"
-	# echo "$HOSTNAME"
+	rm setup.properties install.py
 	ORG_NAME=test
 	EMAIL=test@test.org
 	CITY=pune
@@ -173,7 +171,7 @@ EOF
 	# 	else
 	# 			echo " OS not found"
 	# fi
-	sleep 300
+	sleep 300 &&
 	echo " installation started"
 	if [[ ${PACKAGE_OR_ONLINE} == "online" ]]; then
 		sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
@@ -193,6 +191,7 @@ EOF
 			echo "${OS} package installation started"
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo yum install -y ./jans-${VERSION}-el8.x86_64.rpm
+			echo "running setup "
 			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n
 EOF
 		fi
