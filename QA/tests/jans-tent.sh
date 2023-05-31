@@ -39,10 +39,9 @@ echo -ne '\n'  | openssl s_client -servername $OP_HOSTNAME -connect $OP_HOSTNAME
     export REQUESTS_CA_BUNDLE=${CERT_PATH} && mv ${JANS_PATH}/op_web_cert.cer $CERT_PATH
 
     rm ${JANS_PATH}/op_web_cert ${JANS_PATH}/client_info.json
-    #sed -i "s/ISSUER =*/ISSUER =/" ${JANS_PATH}/clientapp/config.py
     sed -i "s/.*ISSUER.*/ISSUER = 'https\:\/\/${OP_HOSTNAME}'/" ${JANS_PATH}/clientapp/config.py
-    python ${JANS_PATH}/clientapp/register_new_client.py
-    echo "simple passwd test started"
+    python ${JANS_PATH}/register_new_client.py
+    echo "+++++++++++++++++++++simple passwd test started+++++++++++++++++++++"
     python main.py &
     echo "press enter after completting simple auth passwd test"
     read
@@ -50,10 +49,21 @@ echo -ne '\n'  | openssl s_client -servername $OP_HOSTNAME -connect $OP_HOSTNAME
     if [[ "" !=  "$PID" ]]; then
     echo "killing $PID"
     kill -9 $PID
+    echo "+++++++++++++++++++++simple passwd test completed+++++++++++++++++++++"
+    fi
+    sed -i "s/^\#ACR_VALUES = \"agama\"/ACR_VALUES = \"agama\"/" ${JANS_PATH}/clientapp/config.py
+    sed -i "s/^ACR_VALUES = 'simple_password_auth'/#ACR_VALUES = 'simple_password_auth'/" ${JANS_PATH}/clientapp/config.py
+    sed -i "s/^ADDITIONAL_PARAMS = None/#ADDITIONAL_PARAMS = None/" ${JANS_PATH}/clientapp/config.py
+    sed -i "s/^\#ADDITIONAL_PARAMS = {'agama_flow': 'io.jans.flow.sample.basic'}/ADDITIONAL_PARAMS = {'agama_flow': 'io.jans.flow.sample.basic'}/" ${JANS_PATH}/clientapp/config.py
     python main.py &
-     echo "press enter after completting simple auth passwd test"
+    echo "press enter after completting agama test"
     read
-fi
+    PID=`ps -eaf | grep main.py | grep -v grep | awk '{print $2}'`
+    if [[ "" !=  "$PID" ]]; then
+    echo "killing $PID"
+    kill -9 $PID
+   echo " +++++++++++++++++++++agama test completed+++++++++++++++++++++"
+    fi
 else
      echo " some parameter are empty please check below instructions"
     helpFunction

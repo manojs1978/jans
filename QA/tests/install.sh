@@ -68,11 +68,13 @@ then
 	sudo apt-get remove --purge -y mysql*;sudo apt-get purge -y  mysql*;sudo apt-get -y autoremove;
 	sudo apt-get -y autoclean;sudo apt-get remove -y dbconfig-mysql;sudo rm -r -f /var/lib/mysql
 	sudo apt  remove  -y postgresql postgresql-doc postgresql-common
+	sudo apt-get --purge remove -y postgresql postgresql-14 postgresql-client-common postgresql-common postgresql-contrib
 	sudo mv -f /var/lib/pgsql /var/lib/pgsql_old_$$
 	sudo apt remove -y opendj-server
-	sudo /opt/opendj/uninstall
+	sudo /opt/opendj/uninstall -a --no-prompt
 	sudo rm -rf  /opt/opendj/lib
 	sudo rm -rf ~/jans-*
+	sudo apt autoremove -y
 	
 elif [[ $OS == "suse" ]]
 then
@@ -84,7 +86,7 @@ then
 	sudo zypper remove -y postgresql postgresql-contrib postgresql-server
 	sudo mv -f /var/lib/pgsql /var/lib/pgsql_old_$$
 	sudo zypper remove -y opendj-server
-	sudo /opt/opendj/uninstall
+	 sudo /opt/opendj/uninstall -a --no-prompt
 	sudo rm -rf  /opt/opendj/lib
 	sudo rm -rf ~/jans-*.*
 
@@ -98,7 +100,7 @@ then
 	sudo yum  remove -y  postgresql postgresql-doc postgresql-common  postgresql-contrib postgresql-server
 	sudo mv -f /var/lib/pgsql /var/lib/pgsql_old_$$
 	sudo yum remove -y opendj-server
-	sudo /opt/opendj/uninstall
+	 sudo /opt/opendj/uninstall -a --no-prompt
 	sudo rm -rf  /opt/opendj/lib
 	sudo rm -rf ~/jans-*.*
 fi
@@ -256,9 +258,10 @@ EOF
 		sudo ssh	 -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 		sed -i 's,ssa.txt,'"$HOME"'\/ssa.txt,' setup.properties
 		sudo python3 flex_setup.py -y -f setup.properties --flex-non-interactive 
+		rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 		cd /opt/jans/jetty/casa
 		sudo touch .administrable
-		rm setup.properties install.py flex_setup.py ssa.txt *.rpm
+		
 		
 EOF
 		echo " installation ended"
@@ -268,11 +271,12 @@ EOF
 			echo "${OS} package installation started"
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo zypper --no-gpg-checks install -y ./flex-${VERSION}-suse15.x86_64.rpm
-			sed -i 's,ssa.txt,'"$HOME"'\/ssa.txt,' setup.properties
+			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
-		#	rm setup.properties install.py flex_setup.py ssa.txt *.rpm
+			 
 EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
@@ -280,23 +284,24 @@ EOF
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo yum install -y ./flex-${VERSION}-el8.x86_64.rpm
 			echo "running setup "
-			sed -i 's,ssa.txt,'"$HOME"'\/ssa.txt,' setup.properties
+			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
-			rm setup.properties install.py flex_setup.py ssa.txt *.rpm
+			
 EOF
 		fi
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
 			echo "${OS} package installation started"
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo apt install -y ./flex_${VERSION}.${OS}.04_amd64.deb
-			sed -i 's,ssa.txt,'"echo $HOME"'\/ssa.txt,' setup.properties
-			#sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
-			sudo python3 flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			sed -i 's,ssa.txt,\/root\/ssa.txt,' setup.properties
+			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			#sudo python3 flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			rm setup.properties install.py flex_setup.py ssa.txt *.deb
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
-		#	rm setup.properties install.py flex_setup.py ssa.txt *.deb
 EOF
 		fi
 
