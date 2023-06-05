@@ -347,6 +347,19 @@ class JCA_CLI:
             self.cli_logger.debug('requests response headers: %s', str(response.headers))
             self.cli_logger.debug('requests response text: %s', str(response.text))
 
+    def log_cmd(self, operation_id, url_suffix, endpoint_args, data):
+
+        cmdl = [sys.executable, __file__, '--operation-id', operation_id]
+        if url_suffix:
+            cmdl += ['--url-suffix', '"{}"'.format(url_suffix)]
+        if endpoint_args:
+            cmdl += ['--endpoint-args', '"{}"'.format(endpoint_args)]
+        if data:
+            cmdl += ['--data', "'{}'".format(json.dumps(data))]
+
+        with open(os.path.join(log_dir, 'cli_cmd.log'), 'a') as w:
+            w.write(' '.join(cmdl) + '\n')
+
     def set_user(self):
         self.auth_username = None
         self.auth_password = None
@@ -710,7 +723,8 @@ class JCA_CLI:
         return True, ''
 
     def get_access_token(self, scope):
-        if self.my_op_mode != 'auth':
+
+        if self.my_op_mode != 'auth' and scope:
             if self.use_test_client:
                 self.get_scoped_access_token(scope)
             elif not self.access_token and not self.wrapped:
@@ -801,6 +815,7 @@ class JCA_CLI:
             sys.stderr.write("Please wait while retrieving data ...\n")
 
         security = self.get_scope_for_endpoint(endpoint)
+
         self.get_access_token(security)
 
         headers=self.get_request_header({'Accept': 'application/json'})
@@ -1094,14 +1109,18 @@ class JCA_CLI:
 
     def get_json_from_file(self, data_fn):
 
-        if not os.path.exists(data_fn):
-            self.exit_with_error("Can't find file {}".format(data_fn))
+        if not os.path.isfile(data_fn):
+            try:
+                data = json.loads(data_fn)
+            except Exception as e:
+                self.exit_with_error("Error parsing json: {}".format(e))
 
-        try:
-            with open(data_fn) as f:
-                data = json.load(f)
-        except:
-            self.exit_with_error("Error parsing json file {}".format(data_fn))
+        else:
+            try:
+                with open(data_fn) as f:
+                    data = json.load(f)
+            except Exception as e:
+                self.exit_with_error("Error parsing json file {}: {}".format(data_fn, e))
 
         if isinstance(data, list):
             for entry in data:
@@ -1270,7 +1289,16 @@ class JCA_CLI:
                     else:
                         data = [{'op': pop, 'path': '/'+ pdata.lstrip('/')}]
 
-        caller_function = getattr(self, 'process_command_' + path['__method__'])
+        call_method = path['__method__'].lower()
+        caller_function = getattr(self, 'process_command_' + call_method)
+
+        cmd_data = data
+        if not data and data_fn:
+            cmd_data = self.get_json_from_file(data_fn)
+
+        if call_method in ('post', 'put', 'patch'):
+            self.log_cmd(operation_id, url_suffix, endpoint_args, cmd_data)
+
         return caller_function(path, suffix_param, endpoint_params, data_fn, data=data)
 
 
