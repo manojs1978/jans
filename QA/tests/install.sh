@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -x
 
 # LOG_LOCATION=./logs
 # exec > >(tee -i $LOG_LOCATION/install.log)
@@ -22,6 +22,7 @@ ubuntu_conf(){
 EOF
 }
 rhel_centos_conf(){
+			
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 			sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
@@ -29,8 +30,9 @@ rhel_centos_conf(){
 			sudo yum update -y
 			sudo yum install  python3-pip -y
 			sudo yum  install -y wget python3-certifi python3-ldap3 python3-prompt-toolkit python3-ruamel-yaml
+			echo "downloading package"
 			wget https://github.com/JanssenProject/jans/releases/download/v${VERSION}/jans-${VERSION}-el8.x86_64.rpm &>/dev/null
-			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex_${VERSION}-el8.x86_64.rpm &>/dev/null
+			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex-${VERSION}-el8.x86_64.rpm &>/dev/null
 			
 			sudo reboot
 			
@@ -208,7 +210,7 @@ install_jans() {
 	# 	else
 	# 			echo " OS not found"
 	# fi
-	sleep 200 &&
+	sleep 150 &&
 	SSA="eyJraWQiOiJzc2FfYzY5ZjQ0MjUtYWYwMS00OTA0LThiNmMtOGMyYjQwN2YxNzhmX3NpZ19yczI1NiIsInR5cCI6Imp3dCIsImFsZyI6IlJTMjU2In0.eyJzb2Z0d2FyZV9pZCI6InNhZmlud2FzaS10ZXN0LXNzYS1hbGwiLCJncmFudF90eXBlcyI6WyJjbGllbnRfY3JlZGVudGlhbHMiXSwib3JnX2lkIjoiZ2l0aHViOlNhZmluV2FzaSIsImlzcyI6Imh0dHBzOi8vYWNjb3VudC5nbHV1Lm9yZyIsInNvZnR3YXJlX3JvbGVzIjpbInBhc3N3dXJkIiwibGljZW5zZSIsInN1cGVyZ2x1dSJdLCJleHAiOjE3NjcyMzY5MjgsImlhdCI6MTY4MjAyNTcwOCwianRpIjoiNDU4ZWQ2YzMtMDdkMS00NWUyLTgzNTYtMWZiOTU5ZTZkODMwIn0.qOwhhFXUjwO03rZ48Ww2BKsSYAXyq4M1H04K79BO75YKCjtHb5CM8-ljm4OEM3j55MDsJftxf2qq3TJnBHOjDN82dHRT3sqZQXC7OdSJpgNaGXPlnewCgswSVrPZO5lXcrjR_liOHBJw1_-P6X0Rp6eQtO3CH2J6DVHU2qRJbZZr6gWeggAT6Xk4TIkyZnhEp2_97KrQRSFwlxSmNKEQBf4ZRwiq_DwFg_ZCGYGCQUv-SORAQ9brJfXKjxQwPdLCK2AEhJCHcLQAHhTQEQk9z9XJ9XYaHgIuHMTZkE7xNRPKaW91VuprSeAP0DYD_BTyZeE00suo0fKQKND1hKBvLQ"
 	echo "$SSA" > ssa.txt
 	curl https://raw.githubusercontent.com/JanssenProject/jans/v${VERSION}/jans-linux-setup/jans_setup/install.py >install.py
@@ -224,6 +226,7 @@ install_jans() {
 	echo "install downloaded"
 	sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 	sudo python3 install.py -y --args="-f setup.properties -c -n" 
+	rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 	
 EOF
 		echo " installation ended"
@@ -233,7 +236,8 @@ EOF
 			echo "${OS} package installation started"
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo zypper --no-gpg-checks install -y ./jans-${VERSION}-suse15.x86_64.rpm
-			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n
+			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
@@ -241,14 +245,16 @@ EOF
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo yum install -y ./jans-${VERSION}-el8.x86_64.rpm
 			echo "running setup "
-			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n
+			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 EOF
 		fi
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
 			echo "${OS} package installation started"
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo apt install -y ./jans_${VERSION}.${OS}.04_amd64.deb
-			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n
+			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 EOF
 		fi
 	fi
@@ -261,8 +267,6 @@ EOF
 		rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 		cd /opt/jans/jetty/casa
 		sudo touch .administrable
-		
-		
 EOF
 		echo " installation ended"
 	elif [[ ${PACKAGE_OR_ONLINE} == "package" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
@@ -273,10 +277,11 @@ EOF
 			sudo zypper --no-gpg-checks install -y ./flex-${VERSION}-suse15.x86_64.rpm
 			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			echo "installation completed"
 			rm setup.properties install.py flex_setup.py ssa.txt *.rpm
 			cd /opt/jans/jetty/casa
-			sudo touch .administrable
-			 
+			sudo touch .administrable	
+exit
 EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
@@ -286,10 +291,11 @@ EOF
 			echo "running setup "
 			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
+			echo "installation completed"
 			rm setup.properties install.py flex_setup.py ssa.txt *.rpm
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
-			
+exit			
 EOF
 		fi
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
@@ -297,11 +303,14 @@ EOF
 			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
 			sudo apt install -y ./flex_${VERSION}.${OS}.04_amd64.deb
 			sed -i 's,ssa.txt,\/root\/ssa.txt,' setup.properties
+			echo "running setup "
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
 			#sudo python3 flex_setup.py  -f setup.properties -n -c --flex-non-interactive
 			rm setup.properties install.py flex_setup.py ssa.txt *.deb
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
+			echo "installation completed"
+exit
 EOF
 		fi
 
