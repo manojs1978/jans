@@ -51,10 +51,11 @@ echo -ne '\n'  | openssl s_client -servername $OP_HOSTNAME -connect $OP_HOSTNAME
     kill -9 $PID
     echo "+++++++++++++++++++++simple passwd test completed+++++++++++++++++++++"
     fi
-    sed -i "s/^\#ACR_VALUES = \"agama\"/ACR_VALUES = \"agama\"/" ${JANS_PATH}/clientapp/config.py
+    echo "config.py changes started"
+    sed -i "s/^\# ACR_VALUES = \"agama\"/ACR_VALUES = \"agama\"/" ${JANS_PATH}/clientapp/config.py
     sed -i "s/^ACR_VALUES = 'simple_password_auth'/#ACR_VALUES = 'simple_password_auth'/" ${JANS_PATH}/clientapp/config.py
     sed -i "s/^ADDITIONAL_PARAMS = None/#ADDITIONAL_PARAMS = None/" ${JANS_PATH}/clientapp/config.py
-    sed -i "s/^\#ADDITIONAL_PARAMS = {'agama_flow': 'io.jans.flow.sample.basic'}/ADDITIONAL_PARAMS = {'agama_flow': 'io.jans.flow.sample.basic'}/" ${JANS_PATH}/clientapp/config.py
+    sed -i "s/^\# ADDITIONAL_PARAMS = {'paramOne': 'valueOne', 'paramTwo': 'valueTwo'}/ADDITIONAL_PARAMS = {'agama_flow': 'io.jans.flow.sample.basic'}/" ${JANS_PATH}/clientapp/config.py
     python main.py &
     echo "press enter after completting agama test"
     read

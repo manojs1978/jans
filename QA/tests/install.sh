@@ -12,7 +12,7 @@
 #rm  -rf  $LOG_LOCATION/* ./report/result.txt
 
 ubuntu_conf(){
-		sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+		sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
  		sudo apt install  python3-pip -y
 		sudo apt install python3-ruamel.yaml -y
 		echo "package download started"
@@ -23,7 +23,7 @@ EOF
 }
 rhel_centos_conf(){
 			
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 			sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 			sudo yum -y module enable mod_auth_openidc 
@@ -40,23 +40,24 @@ rhel_centos_conf(){
 EOF
 }
 suse_conf(){
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			echo "downloading package"
 			wget https://github.com/JanssenProject/jans/releases/download/v${VERSION}/jans-${VERSION}-suse15.x86_64.rpm &>/dev/null
 			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex-${VERSION}-suse15.x86_64.rpm &>/dev/null
-			sudo zypper addrepo https://download.opensuse.org/repositories/home:frispete:python/15.4/home:frispete:python.repo
+			#sudo zypper addrepo https://download.opensuse.org/repositories/home:frispete:python/15.4/home:frispete:python.repo
 			sudo zypper --non-interactive --gpg-auto-import-keys refresh
 			sudo zypper --non-interactive --gpg-auto-import-keys install python3-PyMySQL
 			sudo wget https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/python3-ruamel.yaml.clib-0.2.0-1.1.x86_64.rpm
 			sudo wget https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/noarch/python3-ruamel.yaml-0.16.10-1.1.noarch.rpm
 			sudo zypper install -y ./python3-ruamel.yaml.clib-0.2.0-1.1.x86_64.rpm
 			sudo zypper install -y ./python3-ruamel.yaml-0.16.10-1.1.noarch.rpm
+			echo "package Downloaded"
 EOF
 }
 uninstall_jans() {
 
 	echo "checking  jans server installed"
-	sudo ssh -T -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+	sudo ssh -T -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 # sudo chmod -R 755 /opt/jans/ >/dev/null
 #if [[ -f /opt/jans/jans-cli/config-cli.py ]]; then
 # echo "jans server is already installed"
@@ -88,7 +89,7 @@ then
 	sudo zypper remove -y postgresql postgresql-contrib postgresql-server
 	sudo mv -f /var/lib/pgsql /var/lib/pgsql_old_$$
 	sudo zypper remove -y opendj-server
-	 sudo /opt/opendj/uninstall -a --no-prompt
+	sudo /opt/opendj/uninstall -a --no-prompt
 	sudo rm -rf  /opt/opendj/lib
 	sudo rm -rf ~/jans-*.*
 
@@ -216,7 +217,7 @@ install_jans() {
 	curl https://raw.githubusercontent.com/JanssenProject/jans/v${VERSION}/jans-linux-setup/jans_setup/install.py >install.py
 	curl https://raw.githubusercontent.com/GluuFederation/flex/v${VERSION}/flex-linux-setup/flex_linux_setup/flex_setup.py >flex_setup.py
 
-	sudo scp -i  private.pem ssa.txt setup.properties install.py flex_setup.py ${USERNAME}@${IPADDRESS}:~/
+	sudo scp -i  ${PRIVATE} ssa.txt setup.properties install.py flex_setup.py ${USERNAME}@${IPADDRESS}:~/
 	
 	rm setup.properties install.py flex_setup.py ssa.txt
 
@@ -224,7 +225,7 @@ install_jans() {
 	if [[ "${PACKAGE_OR_ONLINE}" == "online" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
 
 	echo "install downloaded"
-	sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+	sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 	sudo python3 install.py -y --args="-f setup.properties -c -n" 
 	rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
 	
@@ -234,34 +235,34 @@ EOF
 		echo "package installation started"
 		if [[ ${OS} == "suse" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo zypper --no-gpg-checks install -y ./jans-${VERSION}-suse15.x86_64.rpm
 			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
-			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm 
 EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo yum install -y ./jans-${VERSION}-el8.x86_64.rpm
 			echo "running setup "
 			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
-			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm 
 EOF
 		fi
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo apt install -y ./jans_${VERSION}.${OS}.04_amd64.deb
 			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
-			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
+			rm setup.properties install.py flex_setup.py ssa.txt  *.deb
 EOF
 		fi
 	fi
 
 
 	if [[ ${PACKAGE_OR_ONLINE} == "online" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
-		sudo ssh	 -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+		sudo ssh	 -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 		sed -i 's,ssa.txt,'"$HOME"'\/ssa.txt,' setup.properties
 		sudo python3 flex_setup.py -y -f setup.properties --flex-non-interactive 
 		rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.deb
@@ -273,7 +274,7 @@ EOF
 		echo "package installation started"
 		if [[ ${OS} == "suse" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo zypper --no-gpg-checks install -y ./flex-${VERSION}-suse15.x86_64.rpm
 			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
@@ -286,9 +287,8 @@ EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo yum install -y ./flex-${VERSION}-el8.x86_64.rpm
-			echo "running setup "
 			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
 			echo "installation completed"
@@ -300,12 +300,10 @@ EOF
 		fi
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
 			echo "${OS} package installation started"
-			sudo ssh -i private.pem ${USERNAME}@${IPADDRESS} <<EOF
+			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
 			sudo apt install -y ./flex_${VERSION}.${OS}.04_amd64.deb
 			sed -i 's,ssa.txt,\/root\/ssa.txt,' setup.properties
-			echo "running setup "
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
-			#sudo python3 flex_setup.py  -f setup.properties -n -c --flex-non-interactive
 			rm setup.properties install.py flex_setup.py ssa.txt *.deb
 			cd /opt/jans/jetty/casa
 			sudo touch .administrable
@@ -319,18 +317,18 @@ EOF
 }
 
 helpFunction() {
-	echo "KEEP PRIVATE.PEM and INSTALL.SH IN SAME FOLDER"
-	echo "Usage: ./install.sh -i IPADDRESS -h HOSTNAME -u USERNAME -d DB -o OS  -b VERSION -p PACKAGE_OR_ONLINE -f FLEX_OR_JANS"
-	echo -e "EX: ./install.sh  3.10.10.22  manojs1978-pleasing-goldfish.gluu.info  ec2-user  ldap  ubuntu22 OR suse OR rhel OR ubuntu20  1.0.12 OR 1.0.13.nightly  package jans"
+	echo "Usage: ./install.sh -i IPADDRESS -h HOSTNAME -u USERNAME -k PRIVATE -d DB -o OS  -b VERSION -p PACKAGE_OR_ONLINE -f FLEX_OR_JANS"
+	echo -e "EX: ./install.sh  3.10.10.22  manojs1978-pleasing-goldfish.gluu.info  ec2-user  /home/manoj/private_suse_aws.pem   ldap  ubuntu22 OR suse OR rhel OR ubuntu20  1.0.12 OR 1.0.13.nightly  package jans"
 	exit 1 # Exit script after printing help
 }
 
 unset IPADDRESS HOSTNAME USERNAME DB OS PACKAGE_OR_ONLINE FLEX_OR_JANS
-while getopts i:h:u:d:o:b:p:f: option; do
+while getopts i:h:u:k:d:o:b:p:f: option; do
 	case "${option}" in
 	i) IPADDRESS=${OPTARG} ;;
 	h) HOSTNAME=${OPTARG} ;;
 	u) USERNAME=${OPTARG} ;;
+	k) PRIVATE=${OPTARG} ;;
 	d) DB=${OPTARG} ;;
 	o) OS=${OPTARG} ;;
 	b) VERSION=${VERSION} ;;
@@ -342,11 +340,12 @@ done
 IPADDRESS=$1
 HOSTNAME=$2
 USERNAME=$3
-DB=$4
-OS=$5
-VERSION=$6
-PACKAGE_OR_ONLINE=$7
-FLEX_OR_JANS=$8
+PRIVATE=$4
+DB=$5
+OS=$6
+VERSION=$7
+PACKAGE_OR_ONLINE=$8
+FLEX_OR_JANS=$9
 
 # echo "Begin script in case all parameters are correct"
 # echo "your ip address is: ${IPADDRESS}"
@@ -358,7 +357,7 @@ FLEX_OR_JANS=$8
 # echo "installation type is: ${PACKAGE_OR_ONLINE}"
 # echo "your are installing server : ${FLEX_OR_JANS}"
 
-if [ -z ${IPADDRESS} ] && [ -z ${HOSTNAME} ] && [ -z ${USERNAME} ] && [ -z ${DB} ] && [ -z ${OS} ] && [ -z ${VERSION} ] && [ -z ${PACKAGE_OR_ONLINE} ] && [ -z ${FLEX_OR_JANS} ]; then
+if [ -z ${IPADDRESS} ] && [ -z ${HOSTNAME} ] && [ -z ${USERNAME} ] && [ -z ${PRIVATE} ] && [ -z ${DB} ] && [ -z ${OS} ] && [ -z ${VERSION} ] && [ -z ${PACKAGE_OR_ONLINE} ] && [ -z ${FLEX_OR_JANS} ]; then
 	echo " some parameter are empty please check below instructions"
 	helpFunction
 else
