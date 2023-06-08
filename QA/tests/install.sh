@@ -362,5 +362,5 @@ if [ -z ${IPADDRESS} ] && [ -z ${HOSTNAME} ] && [ -z ${USERNAME} ] && [ -z ${PRI
 	helpFunction
 else
 	uninstall_jans
-	#install_jans
+	install_jans
 fi
