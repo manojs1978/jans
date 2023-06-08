@@ -44,7 +44,7 @@ suse_conf(){
 			echo "downloading package"
 			wget https://github.com/JanssenProject/jans/releases/download/v${VERSION}/jans-${VERSION}-suse15.x86_64.rpm &>/dev/null
 			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex-${VERSION}-suse15.x86_64.rpm &>/dev/null
-			#sudo zypper addrepo https://download.opensuse.org/repositories/home:frispete:python/15.4/home:frispete:python.repo
+			sudo zypper addrepo https://download.opensuse.org/repositories/home:frispete:python/15.4/home:frispete:python.repo
 			sudo zypper --non-interactive --gpg-auto-import-keys refresh
 			sudo zypper --non-interactive --gpg-auto-import-keys install python3-PyMySQL
 			sudo wget https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/python3-ruamel.yaml.clib-0.2.0-1.1.x86_64.rpm
@@ -362,5 +362,5 @@ if [ -z ${IPADDRESS} ] && [ -z ${HOSTNAME} ] && [ -z ${USERNAME} ] && [ -z ${PRI
 	helpFunction
 else
 	uninstall_jans
-	install_jans
+	#install_jans
 fi
