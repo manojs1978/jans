@@ -16,8 +16,8 @@ ubuntu_conf(){
  		sudo apt install  python3-pip -y
 		sudo apt install python3-ruamel.yaml -y
 		echo "package download started"
-		wget https://github.com/JanssenProject/jans/releases/download/v${VERSION}/jans_${VERSION}.${OS}.04_amd64.deb &>/dev/null
-		wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex_${VERSION}.${OS}.04_amd64.deb &>/dev/null
+		wget https://github.com/JanssenProject/jans/releases/download/v${VERSION}/jans_${VERSION}.${OS}.04_amd64.deb -P /tmp &>/dev/null
+		wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex_${VERSION}.${OS}.04_amd64.deb -P /tmp &>/dev/null
 		echo "package downloaded"
 EOF
 }
@@ -35,8 +35,6 @@ rhel_centos_conf(){
 			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex-${VERSION}-el8.x86_64.rpm &>/dev/null
 			
 			sudo reboot
-			
-			
 EOF
 }
 suse_conf(){
@@ -46,6 +44,9 @@ suse_conf(){
 			wget https://github.com/GluuFederation/flex/releases/download/v${VERSION}/flex-${VERSION}-suse15.x86_64.rpm &>/dev/null
 			sudo zypper addrepo https://download.opensuse.org/repositories/home:frispete:python/15.4/home:frispete:python.repo
 			sudo zypper --non-interactive --gpg-auto-import-keys refresh
+			sudo zypper --non-interactive --gpg-auto-import-keys install python3-pip 
+			#sudo pip3 --non-interactive --gpg-auto-import-keys install pymysql
+			#sudo pip3 install python3-ruamel.yaml -y
 			sudo zypper --non-interactive --gpg-auto-import-keys install python3-PyMySQL
 			sudo wget https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/python3-ruamel.yaml.clib-0.2.0-1.1.x86_64.rpm
 			sudo wget https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/noarch/python3-ruamel.yaml-0.16.10-1.1.noarch.rpm
@@ -65,8 +66,8 @@ uninstall_jans() {
 
 if [[ $OS == "ubuntu20" ]] || [[ $OS == "ubuntu22" ]]
 then
-	sudo apt remove -y jans
-	sudo apt remove -y flex
+	sudo apt-get --purge remove -y jans
+	sudo apt-get --purge remove -y flex
 	sudo python3 install.py -uninstall -y
 	sudo apt-get remove --purge -y mysql*;sudo apt-get purge -y  mysql*;sudo apt-get -y autoremove;
 	sudo apt-get -y autoclean;sudo apt-get remove -y dbconfig-mysql;sudo rm -r -f /var/lib/mysql
@@ -91,7 +92,8 @@ then
 	sudo zypper remove -y opendj-server
 	sudo /opt/opendj/uninstall -a --no-prompt
 	sudo rm -rf  /opt/opendj/lib
-	sudo rm -rf ~/jans-*.*
+	sudo rm -rf ~/jans-*.* ~/flex*
+	rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.zip *.asc
 
 elif [[ $OS == "rhel" ]]
 then
@@ -211,7 +213,7 @@ install_jans() {
 	# 	else
 	# 			echo " OS not found"
 	# fi
-	sleep 150 &&
+	sleep 200 &&
 	SSA="eyJraWQiOiJzc2FfYzY5ZjQ0MjUtYWYwMS00OTA0LThiNmMtOGMyYjQwN2YxNzhmX3NpZ19yczI1NiIsInR5cCI6Imp3dCIsImFsZyI6IlJTMjU2In0.eyJzb2Z0d2FyZV9pZCI6InNhZmlud2FzaS10ZXN0LXNzYS1hbGwiLCJncmFudF90eXBlcyI6WyJjbGllbnRfY3JlZGVudGlhbHMiXSwib3JnX2lkIjoiZ2l0aHViOlNhZmluV2FzaSIsImlzcyI6Imh0dHBzOi8vYWNjb3VudC5nbHV1Lm9yZyIsInNvZnR3YXJlX3JvbGVzIjpbInBhc3N3dXJkIiwibGljZW5zZSIsInN1cGVyZ2x1dSJdLCJleHAiOjE3NjcyMzY5MjgsImlhdCI6MTY4MjAyNTcwOCwianRpIjoiNDU4ZWQ2YzMtMDdkMS00NWUyLTgzNTYtMWZiOTU5ZTZkODMwIn0.qOwhhFXUjwO03rZ48Ww2BKsSYAXyq4M1H04K79BO75YKCjtHb5CM8-ljm4OEM3j55MDsJftxf2qq3TJnBHOjDN82dHRT3sqZQXC7OdSJpgNaGXPlnewCgswSVrPZO5lXcrjR_liOHBJw1_-P6X0Rp6eQtO3CH2J6DVHU2qRJbZZr6gWeggAT6Xk4TIkyZnhEp2_97KrQRSFwlxSmNKEQBf4ZRwiq_DwFg_ZCGYGCQUv-SORAQ9brJfXKjxQwPdLCK2AEhJCHcLQAHhTQEQk9z9XJ9XYaHgIuHMTZkE7xNRPKaW91VuprSeAP0DYD_BTyZeE00suo0fKQKND1hKBvLQ"
 	echo "$SSA" > ssa.txt
 	curl https://raw.githubusercontent.com/JanssenProject/jans/v${VERSION}/jans-linux-setup/jans_setup/install.py >install.py
@@ -236,9 +238,12 @@ EOF
 		if [[ ${OS} == "suse" ]]; then
 			echo "${OS} package installation started"
 			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
+			wget https://github.com/JanssenProject/jans/files/11814522/automation-jans-public-gpg.zip
+			unzip automation-jans-public-gpg.zip
+			rpm -import automation-jans-public-gpg.asc
 			sudo zypper --no-gpg-checks install -y ./jans-${VERSION}-suse15.x86_64.rpm
 			sudo python3 /opt/jans/jans-setup/setup.py -f setup.properties -n -c
-			rm setup.properties install.py flex_setup.py ssa.txt *.rpm 
+			rm setup.properties install.py flex_setup.py ssa.txt *.rpm *.zip *.asc
 EOF
 		fi
 		if [[ ${OS} == "rhel" ]]  && [[ "$FLEX_OR_JANS" == "jans" ]]; then
@@ -275,7 +280,10 @@ EOF
 		if [[ ${OS} == "suse" ]]; then
 			echo "${OS} package installation started"
 			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
-			sudo zypper --no-gpg-checks install -y ./flex-${VERSION}-suse15.x86_64.rpm
+			wget https://github.com/GluuFederation/flex/files/11814579/automation-flex-public-gpg.zip
+			unzip automation-flex-public-gpg.zip
+			rpm -import automation-flex-public-gpg.asc
+			sudo zypper  install -y ./flex-${VERSION}-suse15.x86_64.rpm
 			sed -i 's,ssa.txt,\/home\/ec2-user\/ssa.txt,' setup.properties
 			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
 			echo "installation completed"
@@ -301,14 +309,16 @@ EOF
 		if [[ ${OS} == "ubuntu20" ]] || [[ ${OS} == "ubuntu22" ]]  && [[ "$FLEX_OR_JANS" == "flex" ]]; then
 			echo "${OS} package installation started"
 			sudo ssh -i ${PRIVATE} ${USERNAME}@${IPADDRESS} <<EOF
-			sudo apt install -y ./flex_${VERSION}.${OS}.04_amd64.deb
-			sed -i 's,ssa.txt,\/root\/ssa.txt,' setup.properties
-			sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive
-			rm setup.properties install.py flex_setup.py ssa.txt *.deb
-			cd /opt/jans/jetty/casa
-			sudo touch .administrable
-			echo "installation completed"
-exit
+echo "flex package installation started";
+sudo apt install -y /tmp/flex_${VERSION}.${OS}.04_amd64.deb;
+echo "flex package installation ended";
+sed -i 's,ssa.txt,\/root\/ssa.txt,' setup.properties;
+sudo python3 /opt/jans/jans-setup/flex/flex-linux-setup/flex_setup.py  -f setup.properties -n -c --flex-non-interactive;
+rm setup.properties install.py flex_setup.py ssa.txt *.deb;
+cd /opt/jans/jetty/casa;
+sudo touch .administrable;
+echo "installation completed";
+exit;
 EOF
 		fi
 
