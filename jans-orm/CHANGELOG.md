@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.14](https://github.com/JanssenProject/jans/compare/jans-orm-v1.0.13...jans-orm-v1.0.14) (2023-06-12)
+
+
+### Features
+
+* add json_valid valid check to MariaDB JSON column to determione ([#4987](https://github.com/JanssenProject/jans/issues/4987)) ([633c49d](https://github.com/JanssenProject/jans/commit/633c49ddf366253f91aa8a9a1961b5cf8b5ef729))
+* add json_valid valid check to MariaDB JSON column to determione ([#4989](https://github.com/JanssenProject/jans/issues/4989)) ([be92541](https://github.com/JanssenProject/jans/commit/be92541336ae29f9fe44ba36f6a59591d74898a1))
+* update MariaDB JSON_CONTAINS function usage to conform latest ([#5025](https://github.com/JanssenProject/jans/issues/5025)) ([ee67a3b](https://github.com/JanssenProject/jans/commit/ee67a3b9251da81eb2568b146e75c3ebe3e371cc)), closes [#5021](https://github.com/JanssenProject/jans/issues/5021)
+
+
+### Bug Fixes
+
+* prepare for 1.0.14 release ([25ccadf](https://github.com/JanssenProject/jans/commit/25ccadf85327ea14685c6066dc6609919e4f2865))
+
+## [1.0.13](https://github.com/JanssenProject/jans/compare/jans-orm-v1.0.12...jans-orm-v1.0.13) (2023-05-10)
+
+
+### Bug Fixes
+
+* **config-api:** filtering script is not working when backend is MySQL ([#4771](https://github.com/JanssenProject/jans/issues/4771)) ([967994b](https://github.com/JanssenProject/jans/commit/967994b1c86facc9901b302285f22c9171115835))
+* fix(jans-orm): npe in SqlFilterConverter [#4775](https://github.com/JanssenProject/jans/issues/4775) ([#4776](https://github.com/JanssenProject/jans/issues/4776)) ([6fca451](https://github.com/JanssenProject/jans/commit/6fca45166d504589c2b0e7be4a8cc77fbb293d74))
+* prepare for 1.0.13 release ([493478e](https://github.com/JanssenProject/jans/commit/493478e71f6231553c998b48c0f163c7f5869da4))
+
 ## [1.0.12](https://github.com/JanssenProject/jans/compare/jans-orm-v1.0.11...jans-orm-v1.0.12) (2023-04-18)
 
 

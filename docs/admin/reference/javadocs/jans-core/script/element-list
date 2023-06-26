@@ -11,6 +11,7 @@ io.jans.model.custom.script.type.ciba
 io.jans.model.custom.script.type.client
 io.jans.model.custom.script.type.configapi
 io.jans.model.custom.script.type.discovery
+io.jans.model.custom.script.type.fido2
 io.jans.model.custom.script.type.id
 io.jans.model.custom.script.type.idp
 io.jans.model.custom.script.type.introspection
@@ -21,6 +22,7 @@ io.jans.model.custom.script.type.postauthn
 io.jans.model.custom.script.type.revoke
 io.jans.model.custom.script.type.scim
 io.jans.model.custom.script.type.scope
+io.jans.model.custom.script.type.selectaccount
 io.jans.model.custom.script.type.session
 io.jans.model.custom.script.type.spontaneous
 io.jans.model.custom.script.type.ssa

@@ -43,6 +43,8 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.focus import focus_next, focus_previous
 from prompt_toolkit.layout.containers import Float, HSplit, VSplit
 from prompt_toolkit.formatted_text import HTML, merge_formatted_text
+from prompt_toolkit.patch_stdout import patch_stdout
+
 from prompt_toolkit.layout.containers import (
     Float,
     HSplit,
@@ -122,6 +124,18 @@ class JansCliApp(Application):
         self.browse_path = '/'
         self.app_configuration = {}
         self.current_page = None
+        self.jans_help = ("<Enter>          {} \n"
+                "<Esc>            {}\n"
+                "<Alt + letter>   {}\n"
+                "<d>              {}\n"
+                "<Delete>         {}\n"
+                "For More Visit  {}").format(
+                    _("Confirm or Edit current selection"),
+                    _("Close the current dialog"),
+                    _("Navigate to an other tab"),
+                    _("Display current item in JSON format if possible"),
+                    _("Delete current selection if possible"),
+                    "https://docs.jans.io/v1.0.6/admin/config-guide/tui/")
 
         self.not_implemented = Frame(
                             body=HSplit([Label(text=_("Not imlemented yet")), Button(text=_("MyButton"))], width=D()),
@@ -313,10 +327,26 @@ class JansCliApp(Application):
                 test_client=test_client
             )
 
+        print(_("Checking health of Jans Config Api Server"))
+        response = self.cli_requests({'operation_id': 'get-config-health'})
+
+        if response.status_code != 200:
+            print(_("Jans Config Api Server is not running propery"))
+            print(response.text)
+            sys.exit()
+        else:
+            result = response.json()
+            for healt_status in result:
+                if healt_status['status'] != 'UP':
+                    print(_("Jans Config Api Server is not running propery"))
+                    print(healt_status)
+                    sys.exit()
+
+        print(_("Health of Jans Config Api Server seems good"))
+
         status = self.cli_object.check_connection()
 
         self.invalidate()
-
 
         if status not in (True, 'ID Token is expired'):
             buttons = [Button(_("OK"), handler=self.jans_creds_dialog)]
@@ -594,20 +624,13 @@ class JansCliApp(Application):
         focus_previous(ev)
 
     def help(self,ev: KeyPressEvent) -> None:
-        self.show_message(_("Help"),
-        ("<Enter>          {} \n"
-        "<Esc>            {}\n"
-        "<Alt + letter>   {}\n"
-        "<d>              {}\n"
-        "<Delete>         {}\n"
-        "For More Visite  {}")
-        .format(
-            _("Confirm or Edit current selection"),
-            _("Close the current dialog"),
-            _("Navigate to an other tab"),
-            _("Display current item in JSON format if possible"),
-            _("Delete current selection if possible"),
-            "https://docs.jans.io/v1.0.6/admin/config-guide/tui/"))
+        
+        plugin = self._plugins[self.nav_bar.cur_navbar_selection]
+        if callable(getattr(plugin, "help", None)):
+            plugin.help()
+        else:
+            self.show_message(_("Help"),
+                self.jans_help,tobefocused=self.center_container)
 
     def escape(self,ev: KeyPressEvent) -> None:
         try:
@@ -738,7 +761,7 @@ class JansCliApp(Application):
         if on_selection_changed:
             cb._handle_enter = custom_handler
 
-        v = VSplit([Window(FormattedTextControl(title), width=len(title)+1, style=style,), cb], style=widget_style)
+        v = VSplit([Window(FormattedTextControl(title), width=len(title)+1, style=style), cb], height=1, style=widget_style)
 
         v.me = cb
 
@@ -782,19 +805,19 @@ class JansCliApp(Application):
 
     def getTitledWidget(
         self, 
-        title: AnyFormattedText,  
-        name: AnyFormattedText,  
-        widget:AnyContainer, 
-        jans_help: AnyFormattedText= "",
-        style: AnyFormattedText= "",
-        other_widgets: Optional[Sequence[AnyContainer]]=None
+        title: AnyFormattedText,
+        name: AnyFormattedText,
+        widget: AnyContainer,
+        jans_help: AnyFormattedText="",
+        style: AnyFormattedText="",
+        other_widgets: Optional[Sequence[AnyContainer]]=None,
+        height: int=1
         )-> AnyContainer:
         title += ': '
         widget.window.jans_name = name
         widget.window.jans_help = jans_help
-        #li, w2, width = self.handle_long_string(title, widget.values, widget)
 
-        my_widgets = [Window(FormattedTextControl(title), width=len(title)+1, style=style,), widget]
+        my_widgets = [Window(FormattedTextControl(title), width=len(title)+1, style=style, height=height), widget]
         if other_widgets:
             my_widgets.append(other_widgets)
 
@@ -992,7 +1015,8 @@ class JansCliApp(Application):
 application = JansCliApp()
 
 def run():
-    result = application.run()
+    with patch_stdout(application):
+        result = application.run()
     print("See you next time.")
 
 

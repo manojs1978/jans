@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.0.14](https://github.com/JanssenProject/jans/compare/jans-linux-setup-v1.0.13...jans-linux-setup-v1.0.14) (2023-06-12)
+
+
+### Features
+
+* Add DCR flow ([#5096](https://github.com/JanssenProject/jans/issues/5096)) ([4bdea42](https://github.com/JanssenProject/jans/commit/4bdea425bb3d2b174049d03f3664db559e449eb9)), closes [#5092](https://github.com/JanssenProject/jans/issues/5092)
+* **agama:** allow flows to supply the identity of the user to authenticate with a parameterizable attribute ([#5010](https://github.com/JanssenProject/jans/issues/5010)) ([ca941ce](https://github.com/JanssenProject/jans/commit/ca941ce0c2b54a84cd0327f8ac21fe926b533660))
+* **config-api:** cache-refresh plugin code ([#5000](https://github.com/JanssenProject/jans/issues/5000)) ([eed9526](https://github.com/JanssenProject/jans/commit/eed9526415996278b52806cfe37a4dfb5076aa00))
+* **fido2:** Apple_WebAuthn_Root_CA certificate is now downloaded to /authentication_cert folder and read from AttestationCertificateService ([#4756](https://github.com/JanssenProject/jans/issues/4756)) ([1600185](https://github.com/JanssenProject/jans/commit/16001859895d5aa5d840cfc9d425d0ee95149979))
+* **jans-auth-server:** added ability to set client expiration via DCR [#5057](https://github.com/JanssenProject/jans/issues/5057) ([#5185](https://github.com/JanssenProject/jans/issues/5185)) ([a15054b](https://github.com/JanssenProject/jans/commit/a15054b1c3350d6ee0bb9c92d39f6b2d992abfa1))
+* update SG script to conform prod server ([#5103](https://github.com/JanssenProject/jans/issues/5103)) ([0ec3ca8](https://github.com/JanssenProject/jans/commit/0ec3ca8b0e4e8e7287c8041dc75be9b29632da81))
+
+
+### Bug Fixes
+
+* **jans-linux-setup:** change location of persistence script ([#5095](https://github.com/JanssenProject/jans/issues/5095)) ([49054ae](https://github.com/JanssenProject/jans/commit/49054ae66d17d2e7d34febd31ac7ab25be3acdc4))
+* **jans-linux-setup:** maridb json columns ([#5079](https://github.com/JanssenProject/jans/issues/5079)) ([c2be202](https://github.com/JanssenProject/jans/commit/c2be20230a58d1d0ca4111454051fcce83611cce))
+* **jans-linux-setup:** remove dependency distutils ([#5011](https://github.com/JanssenProject/jans/issues/5011)) ([ca42086](https://github.com/JanssenProject/jans/commit/ca42086ef05a63a11006458416ef266a42c958f6))
+* **jans-linux-setup:** type of jans_stat is oauth ([#5059](https://github.com/JanssenProject/jans/issues/5059)) ([c6cc459](https://github.com/JanssenProject/jans/commit/c6cc4595c4f266a26fbcb0ab919352bfc7b9d454))
+* prepare for 1.0.14 release ([25ccadf](https://github.com/JanssenProject/jans/commit/25ccadf85327ea14685c6066dc6609919e4f2865))
+
+## [1.0.13](https://github.com/JanssenProject/jans/compare/jans-linux-setup-v1.0.12...jans-linux-setup-v1.0.13) (2023-05-10)
+
+
+### Features
+
+* **jans-auth-server:** add "introspection" scope check on introspection endpoint access [#4557](https://github.com/JanssenProject/jans/issues/4557) ([#4716](https://github.com/JanssenProject/jans/issues/4716)) ([ce2d75c](https://github.com/JanssenProject/jans/commit/ce2d75c32df382eb2a28f89793778a3e72659700))
+* **jans-linux-setup:** detect arch before starting setup ([#4667](https://github.com/JanssenProject/jans/issues/4667)) ([302aa9b](https://github.com/JanssenProject/jans/commit/302aa9b8243c6aa90ffb0a722eff3e47f2aaa3e5))
+* **jans-linux-setup:** move openbanking profile to gluu ([#4682](https://github.com/JanssenProject/jans/issues/4682)) ([05fc275](https://github.com/JanssenProject/jans/commit/05fc275948b4eceb6c9264c7107e0c2ae7ec6ebc))
+
+
+### Bug Fixes
+
+* **jans-linux-setup:** create opendj sysv script for k8s ([#4804](https://github.com/JanssenProject/jans/issues/4804)) ([64ba632](https://github.com/JanssenProject/jans/commit/64ba632ba8cf77414a46518ebcd83da154a42b06))
+* **jans-linux-setup:** default keystore type pkcs12 ([#4788](https://github.com/JanssenProject/jans/issues/4788)) ([b57739c](https://github.com/JanssenProject/jans/commit/b57739c2736bdae75771262e9ebfaef17a93f458))
+* **jans-linux-setup:** key_regeneration should look up db for keystore file ([#4780](https://github.com/JanssenProject/jans/issues/4780)) ([6fd85a8](https://github.com/JanssenProject/jans/commit/6fd85a83d715558835fe594a0c8ac76f6399bae6))
+* **jans-linux-setup:** role_based introspection script ([#4738](https://github.com/JanssenProject/jans/issues/4738)) ([86c4fee](https://github.com/JanssenProject/jans/commit/86c4feedd696db0271022e4de0a7ad8092d31738))
+* **jans-linux-setup:** use /opt/dist/scripts in case of k8s ([#4807](https://github.com/JanssenProject/jans/issues/4807)) ([461d96b](https://github.com/JanssenProject/jans/commit/461d96b9fda237c924d074f8ef2bbc98f19c429e))
+* prepare for 1.0.13 release ([493478e](https://github.com/JanssenProject/jans/commit/493478e71f6231553c998b48c0f163c7f5869da4))
+
 ## [1.0.12](https://github.com/JanssenProject/jans/compare/jans-linux-setup-v1.0.11...jans-linux-setup-v1.0.12) (2023-04-18)
 
 

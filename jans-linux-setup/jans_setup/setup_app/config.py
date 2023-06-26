@@ -95,7 +95,7 @@ class Config:
             self.ldap_base_dir = os.path.join(base.snap_common, 'opendj')
             self.jetty_user = 'root'
 
-        self.default_store_type = 'JKS'
+        self.default_store_type = 'PKCS12'
 
         #create dummy progress bar that logs to file in case not defined
         progress_log_file = os.path.join(LOG_DIR, 'progress-bar.log')
@@ -203,6 +203,7 @@ class Config:
         self.installOxd = False
         self.installEleven = False
         self.install_jans_cli = True
+        self.install_cache_refresh = True
         self.loadTestData = False
         self.allowPreReleasedFeatures = False
 
@@ -252,7 +253,7 @@ class Config:
         self.encoded_ldapTrustStorePass = None
 
         self.ldapCertFn = self.opendj_cert_fn = os.path.join(self.certFolder, 'opendj.crt')
-        self.ldapTrustStoreFn = self.opendj_p12_fn = os.path.join(self.certFolder, 'opendj.p12')
+        self.ldapTrustStoreFn = self.opendj_p12_fn = os.path.join(self.certFolder, 'opendj.pkcs12')
 
         self.oxd_package = base.determine_package(os.path.join(self.dist_jans_dir, 'oxd-server*.tgz'))
 
@@ -315,7 +316,7 @@ class Config:
         self.default_enc_key_algs = 'RSA1_5 RSA-OAEP ECDH-ES'
         self.default_key_expiration = 365
 
-        self.smtp_jks_fn = os.path.join(self.certFolder, 'smtp-keys.p12')
+        self.smtp_jks_fn = os.path.join(self.certFolder, 'smtp-keys.' + self.default_store_type.lower())
         self.smtp_alias = 'smtp_sig_ec256'
         self.smtp_signing_alg = 'SHA256withECDSA'
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.14-1](https://github.com/JanssenProject/jans/compare/docker-jans-auth-server-v1.0.13-1...docker-jans-auth-server-v1.0.14-1) (2023-06-12)
+
+
+### Bug Fixes
+
+* **docker-jans-auth-server:** compare contents before pushing otp_configuration and super_gluu_creds to secrets ([#4798](https://github.com/JanssenProject/jans/issues/4798)) ([23f2630](https://github.com/JanssenProject/jans/commit/23f2630f6caa71f253a23cc509e1b8c0bca5b891))
+* **docker-jans-auth-server:** handle missing secret when comparing contents ([#5187](https://github.com/JanssenProject/jans/issues/5187)) ([f2a373e](https://github.com/JanssenProject/jans/commit/f2a373e95b73d38c8f867fd686152aa18248c392))
+* prepare for 1.0.14 release ([25ccadf](https://github.com/JanssenProject/jans/commit/25ccadf85327ea14685c6066dc6609919e4f2865))
+
+## [1.0.13-1](https://github.com/JanssenProject/jans/compare/docker-jans-auth-server-v1.0.12-1...docker-jans-auth-server-v1.0.13-1) (2023-05-10)
+
+
+### Bug Fixes
+
+* ensure google libs support all possible credentials ([#4777](https://github.com/JanssenProject/jans/issues/4777)) ([d0759e5](https://github.com/JanssenProject/jans/commit/d0759e595517ca16b97a1ce4f7cd168b29ff17dd))
+* prepare for 1.0.13 release ([493478e](https://github.com/JanssenProject/jans/commit/493478e71f6231553c998b48c0f163c7f5869da4))
+
 ## [1.0.12-1](https://github.com/JanssenProject/jans/compare/docker-jans-auth-server-v1.0.11-1...docker-jans-auth-server-v1.0.12-1) (2023-04-18)
 
 

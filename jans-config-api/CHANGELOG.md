@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.0.14](https://github.com/JanssenProject/jans/compare/jans-config-api-v1.0.13...jans-config-api-v1.0.14) (2023-06-12)
+
+
+### Features
+
+* **config-api:** cache-refresh plugin code ([#5000](https://github.com/JanssenProject/jans/issues/5000)) ([eed9526](https://github.com/JanssenProject/jans/commit/eed9526415996278b52806cfe37a4dfb5076aa00))
+* **jans-auth-server:** added ability to set client expiration via DCR [#5057](https://github.com/JanssenProject/jans/issues/5057) ([#5185](https://github.com/JanssenProject/jans/issues/5185)) ([a15054b](https://github.com/JanssenProject/jans/commit/a15054b1c3350d6ee0bb9c92d39f6b2d992abfa1))
+* **jans-auth-server:** made not found exceptions logging level configurable [#4973](https://github.com/JanssenProject/jans/issues/4973) ([#4982](https://github.com/JanssenProject/jans/issues/4982)) ([98be22b](https://github.com/JanssenProject/jans/commit/98be22b81d365b631d2b7ffcf76d1f3a5ea1935b))
+
+
+### Bug Fixes
+
+* **config-api:** resolved dependency conflict for CustomScriptService ([3121833](https://github.com/JanssenProject/jans/commit/312183373f72f7916b3c4c6cc5176420bba3bae0))
+* **config-api:** revert hide smtp and client model utility method ([#4976](https://github.com/JanssenProject/jans/issues/4976)) ([6519744](https://github.com/JanssenProject/jans/commit/651974408565441951b6a4ca80a4ab555c01352f))
+* **config-api:** test compile issue for cache refresh plugin ([#5144](https://github.com/JanssenProject/jans/issues/5144)) ([af3e707](https://github.com/JanssenProject/jans/commit/af3e7075896cec36f32ee91947dfa1304ca1ebbd))
+* **jans-auth-server:** Illegal op_policy_uri parameter: - exclude entries with blank values from discovery response (oxauth counterpart) [#4888](https://github.com/JanssenProject/jans/issues/4888) ([#4934](https://github.com/JanssenProject/jans/issues/4934)) ([8603290](https://github.com/JanssenProject/jans/commit/8603290cee37c609f9572760c8cf299aba80160e))
+* prepare for 1.0.14 release ([25ccadf](https://github.com/JanssenProject/jans/commit/25ccadf85327ea14685c6066dc6609919e4f2865))
+
+## [1.0.13](https://github.com/JanssenProject/jans/compare/jans-config-api-v1.0.12...jans-config-api-v1.0.13) (2023-05-10)
+
+
+### Features
+
+* **jans-fido2:** interception scripts issue 1485, swagger updates ([#4543](https://github.com/JanssenProject/jans/issues/4543)) ([80274ff](https://github.com/JanssenProject/jans/commit/80274ffd1a20318988d9cc99ee015c5c7d5984b7))
+
+
+### Bug Fixes
+
+* **config-api:** starup issue realted to mail service ([#4853](https://github.com/JanssenProject/jans/issues/4853)) ([6aad8c9](https://github.com/JanssenProject/jans/commit/6aad8c9adf1c00feac6a94e8f5c06e5b22f61c14))
+* jans-config-api/plugins/sample/demo/pom.xml to reduce vulnerabilities ([#4037](https://github.com/JanssenProject/jans/issues/4037)) ([e079b28](https://github.com/JanssenProject/jans/commit/e079b283c0ccbcf768349d3ed80668109e9b7ab2))
+* jans-config-api/plugins/sample/helloworld/pom.xml to reduce vulnerabilities ([#4039](https://github.com/JanssenProject/jans/issues/4039)) ([e0687f2](https://github.com/JanssenProject/jans/commit/e0687f22df61782c326a149930d94e93d5aaf676))
+* prepare for 1.0.13 release ([493478e](https://github.com/JanssenProject/jans/commit/493478e71f6231553c998b48c0f163c7f5869da4))
+* set appropriate redirect_uris for registration in DCR using ssa (admin-ui)[#4748](https://github.com/JanssenProject/jans/issues/4748) ([#4749](https://github.com/JanssenProject/jans/issues/4749)) ([749f66b](https://github.com/JanssenProject/jans/commit/749f66b2290d57d49c43481498f1515243a78495))
+
 ## [1.0.12](https://github.com/JanssenProject/jans/compare/jans-config-api-v1.0.11...jans-config-api-v1.0.12) (2023-04-18)
 
 
